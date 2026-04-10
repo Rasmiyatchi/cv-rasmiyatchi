@@ -1,0 +1,179 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: projects
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - description: string (required)
+    //   - technologies: list (optional)
+    //   - imageUrl: string (optional)
+    //   - demoUrl: string (optional)
+    //   - githubUrl: string (optional)
+    //   - category: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: achievements
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - organization: string (required)
+    //   - date: string (required)
+    //   - description: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: publications
+    // Document ID: auto-generated
+    // Fields:
+    //   - title: string (required)
+    //   - journal: string (required)
+    //   - year: string (required)
+    //   - abstract: string (required)
+    //   - pdfUrl: string (optional)
+    //   - link: string (optional)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: experiences
+    // Document ID: auto-generated
+    // Fields:
+    //   - role: string (required)
+    //   - company: string (required)
+    //   - duration: string (required)
+    //   - description: list (required)
+    //   - createdAt: timestamp (required)
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Since this is a personal portfolio, only the admin can write.
+    // The admin is defined as the authenticated user who matches the User Email.
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == "odiljonsirojiddinov04@gmail.com" && request.auth.token.email_verified == true;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function isValidString(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+             request.resource.data[field].size() >= minLen &&
+             request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidOptionalString(field, minLen, maxLen) {
+      return !(field in request.resource.data) ||
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+
+    // Domain Validators
+    function isValidProject() {
+      return hasRequiredFields(['title', 'description', 'category', 'createdAt']) &&
+             isValidString('title', 1, 100) &&
+             isValidString('description', 1, 2000) &&
+             isValidString('category', 1, 50) &&
+             request.resource.data.createdAt is timestamp &&
+             isValidOptionalString('imageUrl', 0, 500) &&
+             isValidOptionalString('demoUrl', 0, 500) &&
+             isValidOptionalString('githubUrl', 0, 500) &&
+             (!('technologies' in request.resource.data) || (request.resource.data.technologies is list && request.resource.data.technologies.size() <= 20));
+    }
+
+    function isValidAchievement() {
+      return hasRequiredFields(['title', 'organization', 'date', 'description', 'createdAt']) &&
+             isValidString('title', 1, 100) &&
+             isValidString('organization', 1, 100) &&
+             isValidString('date', 1, 50) &&
+             isValidString('description', 1, 2000) &&
+             request.resource.data.createdAt is timestamp;
+    }
+
+    function isValidPublication() {
+      return hasRequiredFields(['title', 'journal', 'year', 'abstract', 'createdAt']) &&
+             isValidString('title', 1, 200) &&
+             isValidString('journal', 1, 100) &&
+             isValidString('year', 1, 50) &&
+             isValidString('abstract', 1, 5000) &&
+             request.resource.data.createdAt is timestamp &&
+             isValidOptionalString('pdfUrl', 0, 500) &&
+             isValidOptionalString('link', 0, 500);
+    }
+
+    function isValidExperience() {
+      return hasRequiredFields(['role', 'company', 'duration', 'description', 'createdAt']) &&
+             isValidString('role', 1, 100) &&
+             isValidString('company', 1, 100) &&
+             isValidString('duration', 1, 50) &&
+             request.resource.data.description is list &&
+             request.resource.data.description.size() <= 20 &&
+             request.resource.data.createdAt is timestamp;
+    }
+
+    function isValidSkill() {
+      return hasRequiredFields(['name', 'level', 'createdAt']) &&
+             isValidString('name', 1, 100) &&
+             request.resource.data.level is number &&
+             request.resource.data.level >= 0 &&
+             request.resource.data.level <= 100 &&
+             request.resource.data.createdAt is timestamp;
+    }
+
+    function isValidProfile() {
+      return hasRequiredFields(['imageUrl']) &&
+             isValidString('imageUrl', 1, 1000);
+    }
+
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidProject();
+      allow update: if isAdmin() && isValidProject();
+      allow delete: if isAdmin();
+    }
+
+    match /achievements/{achievementId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidAchievement();
+      allow update: if isAdmin() && isValidAchievement();
+      allow delete: if isAdmin();
+    }
+
+    match /publications/{publicationId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidPublication();
+      allow update: if isAdmin() && isValidPublication();
+      allow delete: if isAdmin();
+    }
+
+    match /experiences/{experienceId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidExperience();
+      allow update: if isAdmin() && isValidExperience();
+      allow delete: if isAdmin();
+    }
+
+    match /skills/{skillId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidSkill();
+      allow update: if isAdmin() && isValidSkill();
+      allow delete: if isAdmin();
+    }
+
+    match /profile/{profileId} {
+      allow read: if true;
+      allow create: if isAdmin() && isValidProfile();
+      allow update: if isAdmin() && isValidProfile();
+      allow delete: if isAdmin();
+    }
+  }
+}

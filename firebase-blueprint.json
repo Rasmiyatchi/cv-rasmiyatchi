@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "A portfolio project",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "technologies": { "type": "array", "items": { "type": "string" } },
+        "imageUrl": { "type": "string" },
+        "demoUrl": { "type": "string" },
+        "githubUrl": { "type": "string" },
+        "category": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "description", "category"]
+    },
+    "Achievement": {
+      "title": "Achievement",
+      "description": "An award or achievement",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "organization": { "type": "string" },
+        "date": { "type": "string" },
+        "description": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "organization", "date", "description"]
+    },
+    "Publication": {
+      "title": "Publication",
+      "description": "An academic or professional publication",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "journal": { "type": "string" },
+        "year": { "type": "string" },
+        "abstract": { "type": "string" },
+        "pdfUrl": { "type": "string" },
+        "link": { "type": "string" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["title", "journal", "year", "abstract"]
+    },
+    "Experience": {
+      "title": "Experience",
+      "description": "Work experience entry",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "company": { "type": "string" },
+        "duration": { "type": "string" },
+        "description": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["role", "company", "duration", "description"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "A core skill",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "level": { "type": "number" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["name", "level"]
+    },
+    "Profile": {
+      "title": "Profile",
+      "description": "Profile information",
+      "type": "object",
+      "properties": {
+        "imageUrl": { "type": "string" }
+      },
+      "required": ["imageUrl"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": { "$ref": "#/entities/Project" },
+      "description": "Stores portfolio projects"
+    },
+    "/achievements/{achievementId}": {
+      "schema": { "$ref": "#/entities/Achievement" },
+      "description": "Stores awards and achievements"
+    },
+    "/publications/{publicationId}": {
+      "schema": { "$ref": "#/entities/Publication" },
+      "description": "Stores publications"
+    },
+    "/experiences/{experienceId}": {
+      "schema": { "$ref": "#/entities/Experience" },
+      "description": "Stores work experiences"
+    },
+    "/skills/{skillId}": {
+      "schema": { "$ref": "#/entities/Skill" },
+      "description": "Stores core skills"
+    },
+    "/profile/{profileId}": {
+      "schema": { "$ref": "#/entities/Profile" },
+      "description": "Stores profile settings"
+    }
+  }
+}
