@@ -27,10 +27,29 @@ export default function Projects() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
+        const q = query(collection(db, 'projects'));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
-        setProjects(data);
+        
+        // Custom sorting logic by extracting year from title or description
+        const sortedData = data.sort((a, b) => {
+          const extractYear = (text1: string, text2: string) => {
+            const combinedText = `${text1 || ''} ${text2 || ''}`;
+            const matches = combinedText.match(/\b(19|20)\d{2}\b/g);
+            if (!matches) return 0;
+            return Math.max(...matches.map(y => parseInt(y, 10)));
+          };
+          
+          const yearA = extractYear(a.title, a.description);
+          const yearB = extractYear(b.title, b.description);
+          
+          if (yearA !== yearB) return yearB - yearA;
+          
+          // Fallback to createdAt if years are not found
+          return (b as any).createdAt?.toMillis() - (a as any).createdAt?.toMillis() || 0;
+        });
+
+        setProjects(sortedData);
       } catch (error) {
         console.error("Error fetching projects:", error);
       } finally {
