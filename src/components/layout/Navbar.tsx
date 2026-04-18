@@ -43,15 +43,17 @@ export function Navbar() {
       <div className="h-20 sm:h-24"></div> {/* Spacer to prevent content from hiding behind fixed navbar */}
       <nav 
         className={cn(
-          "fixed top-0 sm:top-6 w-full sm:w-[95%] md:w-[90%] max-w-6xl left-1/2 md:-translate-x-1/2 z-50 transition-all duration-300",
+          "fixed top-0 sm:top-6 w-full sm:w-[95%] md:w-[90%] max-w-6xl left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
           scrolled || isOpen ? "sm:top-4" : "sm:top-6"
         )}
       >
         <div 
           className={cn(
-            "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl transition-all duration-300",
-            "border-b sm:border sm:rounded-full border-gray-200 dark:border-gray-800",
-            scrolled ? "shadow-lg shadow-gray-200/20 dark:shadow-black/40" : "shadow-sm"
+            "bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl transition-all duration-300",
+            isOpen ? "border-b pb-2 sm:pb-0" : "border-b sm:border sm:rounded-full",
+            "border-gray-200 dark:border-gray-800",
+            scrolled ? "shadow-lg shadow-gray-200/20 dark:shadow-black/40" : "shadow-sm",
+            isOpen && "sm:rounded-[2rem]" // less rounded when open to match standard expanded look on tablet
           )}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
