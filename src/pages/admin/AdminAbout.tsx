@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy, setDoc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../firebase';
 import { compressImage } from '../../utils/fileHelpers';
@@ -34,8 +34,8 @@ export default function AdminAbout() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, 'skills'), orderBy('createdAt', 'asc'));
-      const querySnapshot = await getDocs(q);
+      // orderBy yo'q — oddiy getDocs, index talab qilmaydi
+      const querySnapshot = await getDocs(collection(db, 'skills'));
       setSkills(querySnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Skill)));
 
       const profileDoc = await getDoc(doc(db, 'profile', 'main'));
@@ -44,8 +44,9 @@ export default function AdminAbout() {
         setHomeImageUrl(profileDoc.data().homeImageUrl || '');
         setJourneyText(profileDoc.data().journeyText || '');
       }
-    } catch (error) {
-      toast.error('Failed to fetch data');
+    } catch (error: any) {
+      console.error('fetchData error:', error);
+      toast.error(`Ma'lumot yuklashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     } finally {
       setLoading(false);
     }

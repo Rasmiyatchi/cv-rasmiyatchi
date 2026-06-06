@@ -42,8 +42,9 @@ export default function AdminPublications() {
       const querySnapshot = await getDocs(collection(db, 'publications'));
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Publication));
       setPublications(data);
-    } catch (error) {
-      toast.error('Failed to fetch publications');
+    } catch (error: any) {
+      console.error('fetchPublications error:', error);
+      toast.error(`Yuklashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     } finally {
       setLoading(false);
     }

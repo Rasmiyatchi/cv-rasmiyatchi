@@ -1,53 +1,35 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { initializeFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import fallbackConfig from '../firebase-applet-config.json';
 
 /**
  * Firebase konfiguratsiyasi.
- *
- * Yangi Firebase loyihasiga ulanish uchun loyiha ildizidagi `.env.local`
- * faylida quyidagi o'zgaruvchilarni to'ldiring (namuna: `.env.example`):
- *
- *   VITE_FIREBASE_API_KEY
- *   VITE_FIREBASE_AUTH_DOMAIN
- *   VITE_FIREBASE_PROJECT_ID
- *   VITE_FIREBASE_STORAGE_BUCKET
- *   VITE_FIREBASE_MESSAGING_SENDER_ID
- *   VITE_FIREBASE_APP_ID
- *   VITE_FIREBASE_MEASUREMENT_ID      (ixtiyoriy)
- *   VITE_FIREBASE_FIRESTORE_DB_ID     (ixtiyoriy, sukut bo'yicha "(default)")
- *
- * Agar env o'zgaruvchilari berilmasa, eski `firebase-applet-config.json`
- * faylidagi qiymatlar ishlatiladi (orqaga moslik uchun).
+ * Yangi loyiha uchun .env.local ga VITE_FIREBASE_* o'zgaruvchilarini kiriting.
+ * Agar env berilmasa, firebase-applet-config.json fallback sifatida ishlatiladi.
  */
 const env = import.meta.env;
 
 const firebaseConfig = {
-  apiKey: env.VITE_FIREBASE_API_KEY ?? fallbackConfig.apiKey,
-  authDomain: env.VITE_FIREBASE_AUTH_DOMAIN ?? fallbackConfig.authDomain,
-  projectId: env.VITE_FIREBASE_PROJECT_ID ?? fallbackConfig.projectId,
-  storageBucket: env.VITE_FIREBASE_STORAGE_BUCKET ?? fallbackConfig.storageBucket,
+  apiKey:            env.VITE_FIREBASE_API_KEY            ?? fallbackConfig.apiKey,
+  authDomain:        env.VITE_FIREBASE_AUTH_DOMAIN        ?? fallbackConfig.authDomain,
+  projectId:         env.VITE_FIREBASE_PROJECT_ID         ?? fallbackConfig.projectId,
+  storageBucket:     env.VITE_FIREBASE_STORAGE_BUCKET     ?? fallbackConfig.storageBucket,
   messagingSenderId: env.VITE_FIREBASE_MESSAGING_SENDER_ID ?? fallbackConfig.messagingSenderId,
-  appId: env.VITE_FIREBASE_APP_ID ?? fallbackConfig.appId,
-  measurementId: env.VITE_FIREBASE_MEASUREMENT_ID ?? (fallbackConfig as any).measurementId,
+  appId:             env.VITE_FIREBASE_APP_ID             ?? fallbackConfig.appId,
+  measurementId:     env.VITE_FIREBASE_MEASUREMENT_ID     ?? (fallbackConfig as any).measurementId,
 };
 
-// Yangi Firebase loyihalarida Firestore doim "(default)" bazasidan foydalanadi.
-// Maxsus baza ID kerak bo'lsa VITE_FIREBASE_FIRESTORE_DB_ID ni .env.local ga qo'shing.
-// Eslatma: fallbackConfig.firestoreDatabaseId ishlatilmaydi — u BOSHQA loyihaga tegishli.
+// Maxsus baza ID kerak bo'lsa .env.local ga VITE_FIREBASE_FIRESTORE_DB_ID qo'shing.
+// Yangi Firebase loyihalari doim "(default)" bazasidan foydalanadi.
 const firestoreDatabaseId = env.VITE_FIREBASE_FIRESTORE_DB_ID ?? '(default)';
 
-const app = initializeApp(firebaseConfig);
+// Vite HMR paytida takroriy initializeApp xatosini oldini olish
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// experimentalForceLongPolling — sandbox/proksili muhitlarda
-// "Could not reach Cloud Firestore backend" xatosini bartaraf etadi.
-export const db = initializeFirestore(
-  app,
-  { experimentalForceLongPolling: true },
-  firestoreDatabaseId,
-);
-
-export const auth = getAuth(app);
+// getFirestore — initializeFirestore ga nisbatan HMR xavfsiz va
+// experimentalForceLongPolling kabi tajribaviy bayroqlarsiz ishlaydi.
+export const db      = getFirestore(app, firestoreDatabaseId);
+export const auth    = getAuth(app);
 export const storage = getStorage(app);

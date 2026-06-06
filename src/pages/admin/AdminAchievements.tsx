@@ -36,8 +36,9 @@ export default function AdminAchievements() {
       const querySnapshot = await getDocs(collection(db, 'achievements'));
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Achievement));
       setAchievements(data);
-    } catch (error) {
-      toast.error('Failed to fetch achievements');
+    } catch (error: any) {
+      console.error('fetchAchievements error:', error);
+      toast.error(`Yuklashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     } finally {
       setLoading(false);
     }

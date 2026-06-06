@@ -44,8 +44,9 @@ export default function AdminProjects() {
       const querySnapshot = await getDocs(collection(db, 'projects'));
       const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Project));
       setProjects(data);
-    } catch (error) {
-      toast.error('Failed to fetch projects');
+    } catch (error: any) {
+      console.error('fetchProjects error:', error);
+      toast.error(`Yuklashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     } finally {
       setLoading(false);
     }

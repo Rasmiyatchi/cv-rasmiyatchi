@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -33,12 +33,11 @@ export default function AdminExperience() {
   const fetchExperiences = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, 'experiences'), orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Experience));
-      setExperiences(data);
-    } catch (error) {
-      toast.error('Failed to fetch experiences');
+      const querySnapshot = await getDocs(collection(db, 'experiences'));
+      setExperiences(querySnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Experience)));
+    } catch (error: any) {
+      console.error('fetchExperiences error:', error);
+      toast.error(`Yuklashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     } finally {
       setLoading(false);
     }
