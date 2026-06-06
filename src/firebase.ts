@@ -28,8 +28,10 @@ const firestoreDatabaseId = env.VITE_FIREBASE_FIRESTORE_DB_ID ?? '(default)';
 // Vite HMR paytida takroriy initializeApp xatosini oldini olish
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// getFirestore — initializeFirestore ga nisbatan HMR xavfsiz va
-// experimentalForceLongPolling kabi tajribaviy bayroqlarsiz ishlaydi.
-export const db      = getFirestore(app, firestoreDatabaseId);
+// Default baza uchun getFirestore(app) — databaseId argument bermaslik xavfsizroq.
+// Maxsus ID uchun getFirestore(app, customId) ishlatiladi.
+export const db = firestoreDatabaseId === '(default)'
+  ? getFirestore(app)
+  : getFirestore(app, firestoreDatabaseId);
 export const auth    = getAuth(app);
 export const storage = getStorage(app);
