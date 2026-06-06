@@ -34,11 +34,10 @@ const firebaseConfig = {
   measurementId: env.VITE_FIREBASE_MEASUREMENT_ID ?? (fallbackConfig as any).measurementId,
 };
 
-// Yangi Firebase loyihalarida Firestore odatda "(default)" bazasidan foydalanadi.
-const firestoreDatabaseId =
-  env.VITE_FIREBASE_FIRESTORE_DB_ID ??
-  (fallbackConfig as any).firestoreDatabaseId ??
-  '(default)';
+// Yangi Firebase loyihalarida Firestore doim "(default)" bazasidan foydalanadi.
+// Maxsus baza ID kerak bo'lsa VITE_FIREBASE_FIRESTORE_DB_ID ni .env.local ga qo'shing.
+// Eslatma: fallbackConfig.firestoreDatabaseId ishlatilmaydi — u BOSHQA loyihaga tegishli.
+const firestoreDatabaseId = env.VITE_FIREBASE_FIRESTORE_DB_ID ?? '(default)';
 
 const app = initializeApp(firebaseConfig);
 
