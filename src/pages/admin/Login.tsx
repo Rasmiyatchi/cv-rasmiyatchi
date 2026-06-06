@@ -46,11 +46,16 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
-      <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-800">
+    <div className="relative isolate min-h-screen flex items-center justify-center bg-transparent px-4 overflow-hidden">
+      {/* Animatsion gradient bloblar */}
+      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden="true">
+        <div className="absolute top-[-10%] left-[-10%] h-80 w-80 rounded-full bg-blue-500/20 blur-3xl animate-blob" />
+        <div className="absolute bottom-[-10%] right-[-10%] h-80 w-80 rounded-full bg-blue-500/20 blur-3xl animate-blob animation-delay-2000" />
+      </div>
+      <div className="max-w-md w-full space-y-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            {t('admin.loginTitle')}
+          <h2 className="mt-6 text-center text-3xl font-extrabold">
+            <span className="text-gradient">{t('admin.loginTitle')}</span>
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
             {t('admin.loginSubtitle')}

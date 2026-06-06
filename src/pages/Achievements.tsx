@@ -42,8 +42,8 @@ export default function Achievements() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl mb-12">
-          {t('achievements.title')}
+        <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl mb-12">
+          <span className="text-gradient">{t('achievements.title')}</span>
         </h1>
 
         {loading ? (
@@ -58,7 +58,7 @@ export default function Achievements() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="gradient-ring bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="flex items-center gap-5 mb-6">
                   <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl text-blue-600 dark:text-blue-400">

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, Github, Linkedin, Mail, ArrowDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { CONTACT } from '../utils/cvData';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -19,81 +20,146 @@ export default function Home() {
           setHomeImageUrl(profileDoc.data().homeImageUrl);
         }
       } catch (error) {
-        console.error("Error fetching home image:", error);
+        console.error('Error fetching home image:', error);
       }
     };
-
     fetchHomeImage();
   }, []);
 
-  return (
-    <div className="relative isolate overflow-hidden min-h-[calc(100vh-5rem)] flex flex-col justify-center">
-      {/* Background gradients */}
-      <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-        <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style={{ clipPath: 'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)' }}></div>
-      </div>
+  // "roles" matni "·" bilan ajratilgan — uni chiplar uchun bo'laklarga ajratamiz
+  const roles = t('home.roles')
+    .split('·')
+    .map((r) => r.trim())
+    .filter(Boolean);
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 pb-20 pt-6 sm:pb-32 lg:flex lg:items-center lg:px-8 lg:py-20 w-full flex-grow">
-        <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl text-center lg:text-left pt-4">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className="mt-8 sm:mt-16 lg:mt-0 flex justify-center lg:justify-start">
-              <span className="inline-flex items-center space-x-2 rounded-full bg-blue-500/10 px-4 py-1.5 text-xs sm:text-sm font-semibold leading-6 text-blue-600 dark:text-blue-400 ring-1 ring-inset ring-blue-500/20 shadow-sm shadow-blue-500/10">
-                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                <span>{t('home.available')}</span>
+  return (
+    <section className="relative isolate overflow-hidden">
+      <div className="mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl flex-col justify-center px-5 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+          {/* Chap: matn */}
+          <div className="text-center lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <span className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/5 px-4 py-1.5 text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300 backdrop-blur">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
+                </span>
+                {t('home.available')}
               </span>
-            </div>
-            <h1 className="mt-6 sm:mt-8 text-4xl sm:text-5xl lg:text-6xl font-display font-bold tracking-tight text-gray-900 dark:text-white leading-tight">
-              {t('home.name')}
-            </h1>
-            <h2 className="mt-3 sm:mt-4 text-lg sm:text-xlg lg:text-2xl font-medium text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 leading-relaxed">
-              {t('home.roles')}
-            </h2>
-            <div className="mt-5 sm:mt-6 space-y-4 text-sm sm:text-base lg:text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-              <p>{t('home.bio1')}</p>
-              <p>{t('home.bio2')}</p>
-            </div>
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4">
-              <Link to="/projects" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto gap-2 text-sm sm:text-base shadow-lg shadow-blue-600/20 group hover:shadow-blue-600/30 transition-all rounded-xl">
-                  {t('home.viewProjects')} 
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-              <Link to="/contact" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto text-sm sm:text-base hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors rounded-xl">
-                  {t('home.contactMe')}
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-        <div className="mx-auto mt-12 sm:mt-24 lg:ml-10 lg:mt-0 lg:mr-0 lg:max-w-none flex justify-center w-full">
+
+              <h1 className="mt-6 text-4xl sm:text-6xl lg:text-7xl font-display font-bold tracking-tight text-gray-900 dark:text-white leading-[1.05]">
+                {t('home.name')}
+              </h1>
+
+              <p className="mt-4 text-lg sm:text-2xl font-semibold text-gradient leading-snug">
+                {roles.slice(0, 4).join(' · ')}
+              </p>
+
+              <p className="mt-6 max-w-xl mx-auto lg:mx-0 text-sm sm:text-base lg:text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+                {t('home.bio1')}
+              </p>
+
+              {/* CTA tugmalari */}
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                <Link to="/projects" className="w-full sm:w-auto">
+                  <Button size="lg" className="w-full sm:w-auto gap-2 rounded-xl group">
+                    {t('home.viewProjects')}
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+                <Link to="/cv" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto gap-2 rounded-xl">
+                    <Download className="w-4 h-4" /> {t('nav.cv')}
+                  </Button>
+                </Link>
+              </div>
+
+              {/* Ijtimoiy tarmoqlar */}
+              <div className="mt-8 flex items-center justify-center lg:justify-start gap-3">
+                {[
+                  { href: CONTACT.github, icon: Github, label: 'GitHub' },
+                  { href: CONTACT.linkedin, icon: Linkedin, label: 'LinkedIn' },
+                  { href: `mailto:${CONTACT.email}`, icon: Mail, label: 'Email' },
+                ].map(({ href, icon: Icon, label }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 dark:border-gray-800 bg-white/60 dark:bg-gray-900/60 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500/40 hover:-translate-y-0.5 transition-all"
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* O'ng: portret */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="w-full max-w-[260px] sm:max-w-md lg:max-w-none relative z-10"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.15, ease: 'easeOut' }}
+            className="relative mx-auto w-full max-w-[300px] sm:max-w-sm lg:max-w-md"
           >
-            {homeImageUrl && (
-              <div className="relative group mx-auto">
-                <div className="absolute -inset-1 sm:-inset-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[2rem] sm:rounded-[2.5rem] blur-xl opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <div className="relative">
+              {/* Yumshoq indigo halqa-yog'du */}
+              <div className="absolute -inset-3 rounded-[2.5rem] bg-gradient-to-br from-blue-500/30 to-blue-700/20 blur-2xl opacity-60" />
+              {homeImageUrl ? (
                 <img
                   src={homeImageUrl}
-                  alt="Sirojiddinov Odiljon"
-                  className="relative mx-auto w-full lg:w-[36rem] aspect-[4/5] lg:aspect-auto h-auto rounded-[2rem] sm:rounded-[2.5rem] bg-gray-50/5 object-cover shadow-2xl ring-1 ring-white/10"
+                  alt={t('home.name')}
+                  className="relative aspect-[4/5] w-full rounded-[2rem] object-cover shadow-2xl ring-1 ring-gray-900/10 dark:ring-white/10"
                   referrerPolicy="no-referrer"
                   loading="lazy"
                   decoding="async"
                 />
+              ) : (
+                <div className="relative flex aspect-[4/5] w-full items-center justify-center rounded-[2rem] bg-gradient-to-br from-blue-500/10 to-blue-700/10 ring-1 ring-gray-900/10 dark:ring-white/10">
+                  <span className="font-display text-7xl font-bold text-blue-500/40">SO</span>
+                </div>
+              )}
+
+              {/* Suzuvchi nishon */}
+              <div className="absolute -bottom-4 -left-4 hidden sm:flex items-center gap-2 rounded-2xl border border-gray-200/70 dark:border-gray-700/70 bg-white/90 dark:bg-gray-900/90 px-4 py-2.5 shadow-xl backdrop-blur animate-float">
+                <span className="flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                <span className="text-xs font-semibold text-gray-800 dark:text-gray-100">
+                  {CONTACT.location}
+                </span>
               </div>
-            )}
+            </div>
           </motion.div>
         </div>
+
+        {/* "Men shular bilan shug'ullanaman" — rollar chiplari */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-14 lg:mt-20"
+        >
+          <div className="flex flex-wrap justify-center lg:justify-start gap-2.5">
+            {roles.map((role) => (
+              <span
+                key={role}
+                className="rounded-full border border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/40 px-4 py-1.5 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 backdrop-blur"
+              >
+                {role}
+              </span>
+            ))}
+          </div>
+        </motion.div>
       </div>
-    </div>
+
+      {/* Aylantirish ishorasi */}
+      <div className="hidden lg:flex justify-center pb-8 -mt-4">
+        <ArrowDown className="h-5 w-5 animate-bounce text-gray-400 dark:text-gray-600" />
+      </div>
+    </section>
   );
 }

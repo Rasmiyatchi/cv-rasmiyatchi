@@ -3,12 +3,12 @@ import { Github, Linkedin, Facebook, Mail } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800 py-12">
+    <footer className="bg-white/50 dark:bg-gray-950/40 backdrop-blur-xl border-t border-gray-200/70 dark:border-gray-800/70 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
-            <Link to="/" className="text-xl font-bold tracking-tighter text-gray-900 dark:text-white">
-              Portfolio<span className="text-blue-600">.</span>
+            <Link to="/" className="text-xl font-bold tracking-tighter">
+              <span className="text-gradient">Portfolio</span><span className="text-blue-500">.</span>
             </Link>
             <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm">
               Building digital experiences that matter.

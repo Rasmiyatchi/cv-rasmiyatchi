@@ -14,7 +14,7 @@ export function AdminLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -25,7 +25,7 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-950 font-sans text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen flex bg-transparent font-sans text-gray-900 dark:text-gray-100">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
@@ -46,7 +46,7 @@ export function AdminLayout() {
         isCollapsed ? "lg:ml-20" : "lg:ml-64"
       )}>
         {/* Mobile header */}
-        <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800">
+        <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white/70 dark:bg-gray-950/60 backdrop-blur-xl border-b border-gray-200/70 dark:border-gray-800/70">
           <div className="text-lg font-bold tracking-tighter text-gray-900 dark:text-white truncate mr-2">
             Admin<span className="text-blue-600">Panel</span>
           </div>
@@ -67,7 +67,7 @@ export function AdminLayout() {
 
         {/* Desktop Header (Language Switcher) */}
         <div className="hidden lg:flex justify-end px-8 py-4 bg-transparent">
-          <div className="flex items-center gap-1 bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 p-1 rounded-lg shadow-sm">
+          <div className="flex items-center gap-1 bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-gray-200/70 dark:border-gray-800/70 p-1 rounded-lg shadow-sm">
             <button onClick={() => i18n.changeLanguage('uz')} className={cn("text-xs font-bold px-2 py-1 rounded transition-colors", i18n.language === 'uz' ? "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400" : "text-gray-500 hover:text-gray-900 dark:hover:text-white")}>UZ</button>
             <button onClick={() => i18n.changeLanguage('ru')} className={cn("text-xs font-bold px-2 py-1 rounded transition-colors", i18n.language === 'ru' ? "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400" : "text-gray-500 hover:text-gray-900 dark:hover:text-white")}>RU</button>
             <button onClick={() => i18n.changeLanguage('en')} className={cn("text-xs font-bold px-2 py-1 rounded transition-colors", i18n.language.startsWith('en') ? "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400" : "text-gray-500 hover:text-gray-900 dark:hover:text-white")}>EN</button>

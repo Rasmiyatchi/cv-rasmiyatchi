@@ -64,8 +64,8 @@ export default function About() {
               decoding="async"
             />
           )}
-          <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
-            {t('about.title')}
+          <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl">
+            <span className="text-gradient">{t('about.title')}</span>
           </h1>
         </div>
         
@@ -105,7 +105,7 @@ export default function About() {
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2.5">
                       <motion.div
-                        className="bg-blue-600 h-2.5 rounded-full"
+                        className="bg-gradient-to-r from-blue-500 to-blue-700 h-2.5 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${skill.level}%` }}
                         transition={{ duration: 1, delay: index * 0.1 }}

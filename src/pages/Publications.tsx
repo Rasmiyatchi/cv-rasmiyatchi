@@ -44,8 +44,8 @@ export default function Publications() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl mb-12">
-          {t('publications.title')}
+        <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl mb-12">
+          <span className="text-gradient">{t('publications.title')}</span>
         </h1>
 
         {loading ? (
@@ -60,7 +60,7 @@ export default function Publications() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white dark:bg-gray-900 p-8 md:p-10 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="gradient-ring bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl p-8 md:p-10 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300"
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-6">
                   <div>

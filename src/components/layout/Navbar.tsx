@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Moon, Sun } from 'lucide-react';
+import { Menu, X, Moon, Sun, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '../../lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,9 @@ export function Navbar() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(
+    () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark'),
+  );
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -31,10 +33,11 @@ export function Navbar() {
   ];
 
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    document.documentElement.classList.toggle('dark', isDark);
+    try {
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    } catch {
+      /* localStorage mavjud bo'lmasligi mumkin */
     }
   }, [isDark]);
 
@@ -59,8 +62,8 @@ export function Navbar() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between h-16 items-center">
               <div className="flex items-center">
-                <Link to="/" className="text-xl sm:text-2xl font-display font-bold tracking-tight text-gray-900 dark:text-white transition-opacity hover:opacity-80">
-                  Portfolio<span className="text-blue-600">.</span>
+                <Link to="/" className="text-xl sm:text-2xl font-display font-bold tracking-tight transition-opacity hover:opacity-80">
+                  <span className="text-gradient">Portfolio</span><span className="text-blue-500">.</span>
                 </Link>
               </div>
 
@@ -80,7 +83,14 @@ export function Navbar() {
                     {link.name}
                   </Link>
                 ))}
-                
+
+                <Link
+                  to="/cv"
+                  className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:opacity-95 transition-opacity"
+                >
+                  <Download className="w-4 h-4" /> {t('nav.cv')}
+                </Link>
+
                 <div className="flex items-center space-x-1 border-l border-gray-300 dark:border-gray-700 pl-4 ml-2">
                   {['uz', 'ru', 'en'].map(lang => (
                     <button 
@@ -167,6 +177,13 @@ export function Navbar() {
                       {link.name}
                     </Link>
                   ))}
+                  <Link
+                    to="/cv"
+                    onClick={() => setIsOpen(false)}
+                    className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 px-4 py-3 text-base font-semibold text-white shadow-sm"
+                  >
+                    <Download className="w-4 h-4" /> {t('nav.cv')}
+                  </Link>
                 </div>
               </motion.div>
             )}

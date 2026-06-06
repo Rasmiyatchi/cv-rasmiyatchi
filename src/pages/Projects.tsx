@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebase';
 import { ExternalLink, Github } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -71,8 +71,8 @@ export default function Projects() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl mb-8">
-          {t('projects.title')}
+        <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl mb-8">
+          <span className="text-gradient">{t('projects.title')}</span>
         </h1>
 
         <div className="flex flex-wrap gap-4 mb-12">
@@ -103,7 +103,7 @@ export default function Projects() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300"
+                className="gradient-ring group relative flex flex-col justify-between bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1 transition-all duration-300"
               >
                 <div>
                   <div className="aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800">

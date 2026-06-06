@@ -96,7 +96,7 @@ export default function AdminAchievements() {
     <div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('admin.manageAchievements')}</h1>
       
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8">
+      <div className="bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8">
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{isEditing ? t('admin.edit') : t('admin.addNew')}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -128,7 +128,7 @@ export default function AdminAchievements() {
         </form>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-x-auto">
+      <div className="bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
           <thead className="bg-gray-50 dark:bg-gray-800/50">
             <tr>
@@ -137,7 +137,7 @@ export default function AdminAchievements() {
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{t('admin.actions')}</th>
             </tr>
           </thead>
-          <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+          <tbody className="bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl divide-y divide-gray-200 dark:divide-gray-800">
             {loading ? (
               <tr><td colSpan={3} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{t('admin.loading')}</td></tr>
             ) : achievements.map((achievement) => (

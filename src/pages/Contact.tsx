@@ -48,8 +48,8 @@ export default function Contact() {
       >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
           <div>
-            <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl mb-6">
-              {t('contact.title')}
+            <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl mb-6">
+              <span className="text-gradient">{t('contact.title')}</span>
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 leading-relaxed">
               {t('contact.subtitle')}
@@ -86,7 +86,7 @@ export default function Contact() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl">
+          <div className="bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl p-8 md:p-10 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

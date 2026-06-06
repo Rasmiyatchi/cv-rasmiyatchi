@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../firebase';
 
 interface Experience {
@@ -64,10 +64,10 @@ export default function Experience() {
         transition={{ duration: 0.5 }}
       >
         <div className="text-center mb-16">
-          <h1 className="text-4xl font-display font-bold tracking-tight text-gray-900 dark:text-white sm:text-5xl mb-6">
-            {t('experience.title')}
+          <h1 className="text-4xl font-display font-bold tracking-tight sm:text-5xl mb-6">
+            <span className="text-gradient">{t('experience.title')}</span>
           </h1>
-          <div className="w-20 h-1.5 bg-blue-600 mx-auto rounded-full"></div>
+          <div className="w-20 h-1.5 bg-gradient-to-r from-blue-500 to-blue-700 mx-auto rounded-full"></div>
         </div>
 
         {loading ? (
@@ -91,7 +91,7 @@ export default function Experience() {
                 </div>
 
                 {/* Content Card */}
-                <div className="group bg-white dark:bg-gray-900/40 rounded-3xl p-6 md:p-8 border border-gray-100 dark:border-gray-800/60 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-100 dark:hover:border-blue-900/30 transition-all duration-300">
+                <div className="group bg-white/70 dark:bg-gray-900/45 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-gray-200/70 dark:border-gray-800/60 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 hover:border-blue-100 dark:hover:border-blue-900/30 transition-all duration-300">
                   <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
                     <div>
                       <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
