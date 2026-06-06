@@ -15,12 +15,13 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
   const navLinks = [
     { name: t('nav.home'), path: '/' },
@@ -34,73 +35,81 @@ export function Navbar() {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
-    try {
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    } catch {
-      /* localStorage mavjud bo'lmasligi mumkin */
-    }
+    try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch { /* ignore */ }
   }, [isDark]);
+
+  const LANGS = ['uz', 'ru', 'en'] as const;
 
   return (
     <>
-      <div className="h-20 sm:h-24"></div> {/* Spacer to prevent content from hiding behind fixed navbar */}
-      <nav 
+      {/* Spacer — prevents content hiding behind the fixed navbar */}
+      <div className="h-16 sm:h-24" />
+
+      <nav
         className={cn(
-          "fixed top-0 sm:top-6 w-full sm:w-[95%] md:w-[90%] max-w-6xl left-1/2 -translate-x-1/2 z-50 transition-all duration-300",
-          scrolled || isOpen ? "sm:top-4" : "sm:top-6"
+          'fixed top-0 sm:top-5 w-full sm:w-[96%] lg:w-[92%] xl:w-[88%] max-w-7xl left-1/2 -translate-x-1/2 z-50 transition-all duration-300',
+          scrolled || isOpen ? 'sm:top-3' : 'sm:top-5',
         )}
       >
-        <div 
+        <div
           className={cn(
-            "bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl transition-all duration-300",
-            isOpen ? "border-b pb-2 sm:pb-0" : "border-b sm:border sm:rounded-full",
-            "border-gray-200 dark:border-gray-800",
-            scrolled ? "shadow-lg shadow-gray-200/20 dark:shadow-black/40" : "shadow-sm",
-            isOpen && "sm:rounded-[2rem]" // less rounded when open to match standard expanded look on tablet
+            'bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl transition-all duration-300',
+            isOpen ? 'border-b' : 'border-b sm:border sm:rounded-full',
+            'border-gray-200 dark:border-gray-800',
+            scrolled ? 'shadow-lg shadow-gray-200/20 dark:shadow-black/40' : 'shadow-sm',
+            isOpen && 'sm:rounded-[2rem]',
           )}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16 items-center">
-              <div className="flex items-center">
-                <Link to="/" className="text-xl sm:text-2xl font-display font-bold tracking-tight transition-opacity hover:opacity-80">
-                  <span className="text-gradient">Portfolio</span><span className="text-blue-500">.</span>
-                </Link>
-              </div>
+          <div className="px-4 sm:px-5 lg:px-6">
+            <div className="flex h-14 sm:h-15 items-center justify-between gap-2">
 
-              {/* Desktop Nav */}
-              <div className="hidden md:flex items-center space-x-1 lg:space-x-4">
+              {/* Logo */}
+              <Link
+                to="/"
+                className="shrink-0 text-xl font-display font-bold tracking-tight transition-opacity hover:opacity-80"
+              >
+                <span className="text-gradient">Portfolio</span>
+                <span className="text-blue-500">.</span>
+              </Link>
+
+              {/* ── Desktop Nav (lg+) ── */}
+              <div className="hidden lg:flex items-center gap-0.5 min-w-0 flex-1 justify-center">
                 {navLinks.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
                     className={cn(
-                      "px-3 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                      'px-2.5 py-1.5 rounded-full text-[12.5px] font-medium transition-all duration-200 whitespace-nowrap',
                       location.pathname === link.path
-                        ? "bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white"
+                        ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/60 hover:text-gray-900 dark:hover:text-white',
                     )}
                   >
                     {link.name}
                   </Link>
                 ))}
+              </div>
 
+              {/* Desktop right controls */}
+              <div className="hidden lg:flex items-center gap-1 shrink-0">
                 <Link
                   to="/cv"
-                  className="ml-1 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-3.5 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 hover:opacity-95 transition-opacity"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-500 to-blue-700 px-3 py-1.5 text-[12.5px] font-semibold text-white shadow-sm shadow-blue-600/20 hover:opacity-95 transition-opacity whitespace-nowrap"
                 >
-                  <Download className="w-4 h-4" /> {t('nav.cv')}
+                  <Download className="w-3.5 h-3.5" />
+                  {t('nav.cv')}
                 </Link>
 
-                <div className="flex items-center space-x-1 border-l border-gray-300 dark:border-gray-700 pl-4 ml-2">
-                  {['uz', 'ru', 'en'].map(lang => (
-                    <button 
+                <div className="flex items-center gap-0.5 border-l border-gray-200 dark:border-gray-700 pl-2 ml-1">
+                  {LANGS.map(lang => (
+                    <button
                       key={lang}
-                      onClick={() => i18n.changeLanguage(lang)} 
+                      onClick={() => i18n.changeLanguage(lang)}
                       className={cn(
-                        "text-xs font-bold px-2.5 py-1.5 rounded-full transition-colors uppercase", 
-                        i18n.language.startsWith(lang) 
-                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400" 
-                          : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+                        'text-[11px] font-bold px-2 py-1.5 rounded-full transition-colors uppercase',
+                        i18n.language.startsWith(lang)
+                          ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+                          : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white',
                       )}
                     >
                       {lang}
@@ -110,48 +119,56 @@ export function Navbar() {
 
                 <button
                   onClick={() => setIsDark(!isDark)}
-                  className="p-2 ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
+                  className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
                   aria-label="Toggle dark mode"
                 >
                   {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-600" />}
                 </button>
               </div>
 
-              {/* Mobile Nav Toggle */}
-              <div className="flex items-center md:hidden space-x-2">
-                <div className="flex items-center space-x-1 mr-1">
-                  {['uz', 'ru', 'en'].map(lang => (
-                    <button 
+              {/* ── Mobile / Tablet controls (< lg) ── */}
+              <div className="flex items-center gap-1.5 lg:hidden shrink-0">
+                {/* Lang switcher */}
+                <div className="flex items-center gap-0.5">
+                  {LANGS.map(lang => (
+                    <button
                       key={lang}
-                      onClick={() => i18n.changeLanguage(lang)} 
+                      onClick={() => i18n.changeLanguage(lang)}
                       className={cn(
-                        "text-[10px] font-bold px-2 py-1 rounded-full uppercase", 
-                        i18n.language.startsWith(lang) 
-                          ? "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400" 
-                          : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+                        'text-[10px] font-bold px-1.5 py-1 rounded-full uppercase transition-colors',
+                        i18n.language.startsWith(lang)
+                          ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400'
+                          : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800',
                       )}
                     >
                       {lang}
                     </button>
                   ))}
                 </div>
+
+                {/* Dark mode toggle */}
                 <button
                   onClick={() => setIsDark(!isDark)}
                   className="p-1.5 rounded-full bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  aria-label="Toggle dark mode"
                 >
                   {isDark ? <Sun className="w-4 h-4 text-gray-300" /> : <Moon className="w-4 h-4 text-gray-600" />}
                 </button>
+
+                {/* Hamburger */}
                 <button
                   onClick={() => setIsOpen(!isOpen)}
-                  className="p-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-transparent dark:border-gray-700"
+                  className="p-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white border border-transparent dark:border-gray-700 transition-colors"
+                  aria-label="Toggle menu"
                 >
                   {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
               </div>
+
             </div>
           </div>
 
-          {/* Mobile Nav Menu */}
+          {/* ── Mobile dropdown menu ── */}
           <AnimatePresence>
             {isOpen && (
               <motion.div
@@ -159,19 +176,19 @@ export function Navbar() {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.2 }}
-                className="md:hidden overflow-hidden bg-white/50 dark:bg-gray-950/50 backdrop-blur-3xl sm:rounded-b-3xl border-t border-gray-200 dark:border-gray-800"
+                className="lg:hidden overflow-hidden bg-white/50 dark:bg-gray-950/50 backdrop-blur-3xl sm:rounded-b-3xl border-t border-gray-200 dark:border-gray-800"
               >
-                <div className="px-4 pt-2 pb-6 space-y-1">
+                <div className="px-4 pt-2 pb-5 space-y-1">
                   {navLinks.map((link) => (
                     <Link
                       key={link.path}
                       to={link.path}
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        "block px-4 py-3 rounded-xl text-base font-medium transition-colors",
+                        'block px-4 py-3 rounded-xl text-sm font-medium transition-colors',
                         location.pathname === link.path
-                          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
                       )}
                     >
                       {link.name}
@@ -180,9 +197,10 @@ export function Navbar() {
                   <Link
                     to="/cv"
                     onClick={() => setIsOpen(false)}
-                    className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 px-4 py-3 text-base font-semibold text-white shadow-sm"
+                    className="mt-2 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 px-4 py-3 text-sm font-semibold text-white shadow-sm"
                   >
-                    <Download className="w-4 h-4" /> {t('nav.cv')}
+                    <Download className="w-4 h-4" />
+                    {t('nav.cv')}
                   </Link>
                 </div>
               </motion.div>

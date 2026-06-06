@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, query, orderBy, setDoc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../../firebase';
 import { compressImage } from '../../utils/fileHelpers';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -28,21 +29,15 @@ export default function AdminAbout() {
   const [uploadingHome, setUploadingHome] = useState(false);
   const { t } = useTranslation();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    level: 50,
-  });
+  const [formData, setFormData] = useState({ name: '', level: 50 });
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Fetch skills
       const q = query(collection(db, 'skills'), orderBy('createdAt', 'asc'));
       const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Skill));
-      setSkills(data);
+      setSkills(querySnapshot.docs.map(d => ({ id: d.id, ...d.data() } as Skill)));
 
-      // Fetch profile image and journey text
       const profileDoc = await getDoc(doc(db, 'profile', 'main'));
       if (profileDoc.exists()) {
         setImageUrl(profileDoc.data().imageUrl || '');
@@ -56,51 +51,29 @@ export default function AdminAbout() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
-  const handleSaveProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await setDoc(doc(db, 'profile', 'main'), { imageUrl, homeImageUrl }, { merge: true });
-      toast.success('Profile image updated successfully');
-    } catch (error) {
-      toast.error('Failed to update profile image');
-    }
-  };
-
-  const handleSaveJourney = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await setDoc(doc(db, 'profile', 'main'), { journeyText }, { merge: true });
-      toast.success('Journey text updated successfully');
-    } catch (error) {
-      toast.error('Failed to update journey text');
-    }
-  };
-
-  const handleSaveHomeImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await setDoc(doc(db, 'profile', 'main'), { imageUrl, homeImageUrl }, { merge: true });
-      toast.success('Home image updated successfully');
-    } catch (error) {
-      toast.error('Failed to update home image');
-    }
-  };
+  // ─── Rasm yuklash: Firebase Storage → (muvaffaqiyatsiz bo'lsa) siqilgan base64 ───
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploading(true);
     try {
-      const compressedBase64 = await compressImage(file);
-      setImageUrl(compressedBase64);
-      toast.success('Rasm muvaffaqiyatli yuklandi. Saqlash tugmasini bosing.');
-    } catch (error) {
-      toast.error('Rasmni yuklashda xatolik yuz berdi');
+      const storageRef = ref(storage, 'profile/about.jpg');
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setImageUrl(url);
+      toast.success('Rasm yuklandi. Saqlash tugmasini bosing.');
+    } catch {
+      // Agar Storage ruxsati yo'q bo'lsa — siqilgan base64 bilan saqlaymiz
+      try {
+        const base64 = await compressImage(file, 400, 400, 0.55);
+        setImageUrl(base64);
+        toast.success('Rasm siqilgan holda yuklandi. Saqlash tugmasini bosing.');
+      } catch {
+        toast.error('Rasmni yuklashda xatolik yuz berdi');
+      }
     } finally {
       setUploading(false);
     }
@@ -109,27 +82,66 @@ export default function AdminAbout() {
   const handleHomeImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploadingHome(true);
     try {
-      const compressedBase64 = await compressImage(file);
-      setHomeImageUrl(compressedBase64);
-      toast.success('Rasm muvaffaqiyatli yuklandi. Saqlash tugmasini bosing.');
-    } catch (error) {
-      toast.error('Rasmni yuklashda xatolik yuz berdi');
+      const storageRef = ref(storage, 'profile/home.jpg');
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setHomeImageUrl(url);
+      toast.success('Rasm yuklandi. Saqlash tugmasini bosing.');
+    } catch {
+      try {
+        const base64 = await compressImage(file, 600, 750, 0.6);
+        setHomeImageUrl(base64);
+        toast.success('Rasm siqilgan holda yuklandi. Saqlash tugmasini bosing.');
+      } catch {
+        toast.error('Rasmni yuklashda xatolik yuz berdi');
+      }
     } finally {
       setUploadingHome(false);
     }
   };
 
+  // ─── Firestore ga saqlash (har biri faqat o'z maydonini yozadi) ───
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await setDoc(doc(db, 'profile', 'main'), { imageUrl }, { merge: true });
+      toast.success('Profil rasmi saqlandi');
+    } catch (error: any) {
+      console.error('handleSaveProfile error:', error);
+      toast.error(`Xatolik: ${error?.code ?? error?.message ?? 'Noma\'lum'}`);
+    }
+  };
+
+  const handleSaveHomeImage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await setDoc(doc(db, 'profile', 'main'), { homeImageUrl }, { merge: true });
+      toast.success('Bosh sahifa rasmi saqlandi');
+    } catch (error: any) {
+      console.error('handleSaveHomeImage error:', error);
+      toast.error(`Xatolik: ${error?.code ?? error?.message ?? 'Noma\'lum'}`);
+    }
+  };
+
+  const handleSaveJourney = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await setDoc(doc(db, 'profile', 'main'), { journeyText }, { merge: true });
+      toast.success('Journey text updated successfully');
+    } catch (error: any) {
+      console.error('handleSaveJourney error:', error);
+      toast.error(`Xatolik: ${error?.code ?? error?.message ?? 'Noma\'lum'}`);
+    }
+  };
+
+  // ─── Ko'nikmalar CRUD ───
+
   const handleSubmitSkill = async (e: React.FormEvent) => {
     e.preventDefault();
-    const skillData = {
-      name: formData.name,
-      level: Number(formData.level),
-      createdAt: serverTimestamp(),
-    };
-
+    const skillData = { name: formData.name, level: Number(formData.level), createdAt: serverTimestamp() };
     try {
       if (isEditing && currentId) {
         await updateDoc(doc(db, 'skills', currentId), skillData);
@@ -148,10 +160,7 @@ export default function AdminAbout() {
   };
 
   const handleEditSkill = (skill: Skill) => {
-    setFormData({
-      name: skill.name,
-      level: skill.level,
-    });
+    setFormData({ name: skill.name, level: skill.level });
     setIsEditing(true);
     setCurrentId(skill.id);
   };
@@ -169,7 +178,7 @@ export default function AdminAbout() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('admin.aboutMe')}</h1>
-      
+
       {/* Profile Image Section */}
       <div className="bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8">
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">{t('admin.profileImage')} (About Page)</h2>
@@ -177,20 +186,15 @@ export default function AdminAbout() {
           <div className="flex gap-4 items-end">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{t('admin.profileImage')} (Upload)</label>
-              <Input 
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload} 
-                disabled={uploading}
-              />
-              {uploading && <p className="text-sm text-blue-500 mt-1">Uploading...</p>}
+              <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading} />
+              {uploading && <p className="text-sm text-blue-500 mt-1">Yuklanmoqda...</p>}
             </div>
-            <Button type="submit" disabled={uploading}>{t('admin.save')}</Button>
+            <Button type="submit" disabled={uploading || !imageUrl}>{t('admin.save')}</Button>
           </div>
           {imageUrl && (
             <div className="mt-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t('admin.preview')}</p>
-              <img src={imageUrl} alt="Profile Preview" className="w-32 h-32 object-cover rounded-full border-4 border-white dark:border-gray-800 shadow-lg" />
+              <img src={imageUrl} alt="Profile Preview" className="w-32 h-32 object-cover rounded-full border-4 border-white dark:border-gray-800 shadow-lg" referrerPolicy="no-referrer" />
             </div>
           )}
         </form>
@@ -203,20 +207,15 @@ export default function AdminAbout() {
           <div className="flex gap-4 items-end">
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Home Page Image (Upload)</label>
-              <Input 
-                type="file"
-                accept="image/*"
-                onChange={handleHomeImageUpload} 
-                disabled={uploadingHome}
-              />
-              {uploadingHome && <p className="text-sm text-blue-500 mt-1">Uploading...</p>}
+              <Input type="file" accept="image/*" onChange={handleHomeImageUpload} disabled={uploadingHome} />
+              {uploadingHome && <p className="text-sm text-blue-500 mt-1">Yuklanmoqda...</p>}
             </div>
-            <Button type="submit" disabled={uploadingHome}>{t('admin.save')}</Button>
+            <Button type="submit" disabled={uploadingHome || !homeImageUrl}>{t('admin.save')}</Button>
           </div>
           {homeImageUrl && (
             <div className="mt-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">{t('admin.preview')}</p>
-              <img src={homeImageUrl} alt="Home Preview" className="w-64 h-48 object-cover rounded-2xl border-4 border-white dark:border-gray-800 shadow-lg" />
+              <img src={homeImageUrl} alt="Home Preview" className="w-64 h-48 object-cover rounded-2xl border-4 border-white dark:border-gray-800 shadow-lg" referrerPolicy="no-referrer" />
             </div>
           )}
         </form>
@@ -227,12 +226,7 @@ export default function AdminAbout() {
         <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">My Journey</h2>
         <form onSubmit={handleSaveJourney} className="space-y-4">
           <div className="mb-4 bg-white text-gray-900">
-            <ReactQuill 
-              theme="snow" 
-              value={journeyText} 
-              onChange={setJourneyText} 
-              className="h-64 mb-12"
-            />
+            <ReactQuill theme="snow" value={journeyText} onChange={setJourneyText} className="h-64 mb-12" />
           </div>
           <Button type="submit">{t('admin.save')}</Button>
         </form>
@@ -245,11 +239,11 @@ export default function AdminAbout() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{t('admin.skillName')}</label>
-              <Input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. React & Next.js" />
+              <Input required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. React & Next.js" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">{t('admin.proficiencyLevel')}</label>
-              <Input required type="number" min="0" max="100" value={formData.level} onChange={e => setFormData({...formData, level: Number(e.target.value)})} placeholder="e.g. 90" />
+              <Input required type="number" min="0" max="100" value={formData.level} onChange={e => setFormData({ ...formData, level: Number(e.target.value) })} placeholder="e.g. 90" />
             </div>
           </div>
           <div className="flex gap-2">
@@ -281,7 +275,7 @@ export default function AdminAbout() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   <div className="flex items-center gap-2">
                     <div className="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${skill.level}%` }}></div>
+                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${skill.level}%` }} />
                     </div>
                     <span>{skill.level}%</span>
                   </div>
