@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
+import { Sparkles, Cpu } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { collection, getDocs, doc, getDoc, query, orderBy } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -69,11 +70,22 @@ export default function About() {
           </h1>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <div>
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-6">
-              {t('about.journey')}
-            </h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-start">
+          {/* Mening hikoyam */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.25 }}
+            className="rounded-3xl bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl border border-gray-200/70 dark:border-gray-800/70 shadow-sm p-7 sm:p-8"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-600/30">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-display font-bold">
+                <span className="text-gradient">{t('about.journey')}</span>
+              </h2>
+            </div>
             <div className="prose prose-lg dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 leading-relaxed ql-editor px-0">
               {journeyText ? (
                 <div dangerouslySetInnerHTML={{ __html: journeyText }} />
@@ -85,25 +97,36 @@ export default function About() {
                 </>
               )}
             </div>
-          </div>
+          </motion.div>
 
-          <div>
-            <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-8">
-              {t('about.skills')}
-            </h2>
+          {/* Asosiy ko'nikmalar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="rounded-3xl bg-white/70 dark:bg-gray-900/55 backdrop-blur-xl border border-gray-200/70 dark:border-gray-800/70 shadow-sm p-7 sm:p-8"
+          >
+            <div className="flex items-center gap-3 mb-7">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-600/30">
+                <Cpu className="h-5 w-5" />
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-display font-bold">
+                <span className="text-gradient">{t('about.skills')}</span>
+              </h2>
+            </div>
             {loading ? (
               <div className="flex justify-center py-10">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
               </div>
             ) : (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {skills.map((skill, index) => (
                   <div key={skill.id}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{skill.name}</span>
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">{skill.name}</span>
                       <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{skill.level}%</span>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-800 rounded-full h-2.5">
+                    <div className="w-full bg-gray-200/80 dark:bg-gray-800 rounded-full h-2.5 overflow-hidden">
                       <motion.div
                         className="bg-gradient-to-r from-blue-500 to-blue-700 h-2.5 rounded-full"
                         initial={{ width: 0 }}
@@ -114,11 +137,11 @@ export default function About() {
                   </div>
                 ))}
                 {skills.length === 0 && (
-                  <p className="text-gray-500">No skills added yet.</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">—</p>
                 )}
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
       </motion.div>
     </div>
