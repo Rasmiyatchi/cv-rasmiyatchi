@@ -69,8 +69,9 @@ export default function AdminExperience() {
       setIsEditing(false);
       setCurrentId(null);
       fetchExperiences();
-    } catch (error) {
-      toast.error('Failed to save experience');
+    } catch (error: any) {
+      console.error('save experience error:', error);
+      toast.error(`Saqlashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     }
   };
 

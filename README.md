@@ -53,8 +53,9 @@ to'ldirish kifoya.
    - `firestore.rules` faylidagi qoidalarni Firestore'ga joylashtiring.
      > Eslatma: qoidalardagi admin email manzilini o'zingiznikiga moslang.
 
-> Agar `.env.local` to'ldirilmasa, orqaga moslik uchun `firebase-applet-config.json`
-> faylidagi eski qiymatlar ishlatiladi.
+> Eslatma: Firebase web konfiguratsiyasi maxfiy emas (u client bundle ichida bo'ladi),
+> shuning uchun standart qiymatlar `src/firebase.ts` ichida ham mavjud. `.env.local`
+> qiymatlari berilsa, ular ustun keladi.
 
 ## Admin panel
 

@@ -92,8 +92,9 @@ export default function AdminProjects() {
       setIsEditing(false);
       setCurrentId(null);
       fetchProjects();
-    } catch (error) {
-      toast.error('Failed to save project');
+    } catch (error: any) {
+      console.error('save project error:', error);
+      toast.error(`Saqlashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     }
   };
 

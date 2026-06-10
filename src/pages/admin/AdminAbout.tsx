@@ -155,8 +155,9 @@ export default function AdminAbout() {
       setIsEditing(false);
       setCurrentId(null);
       fetchData();
-    } catch (error) {
-      toast.error('Failed to save skill');
+    } catch (error: any) {
+      console.error('save skill error:', error);
+      toast.error(`Saqlashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     }
   };
 

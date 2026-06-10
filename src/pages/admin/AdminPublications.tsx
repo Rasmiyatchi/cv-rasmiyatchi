@@ -94,8 +94,9 @@ export default function AdminPublications() {
       setIsEditing(false);
       setCurrentId(null);
       fetchPublications();
-    } catch (error) {
-      toast.error('Failed to save publication');
+    } catch (error: any) {
+      console.error('save publication error:', error);
+      toast.error(`Saqlashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     }
   };
 

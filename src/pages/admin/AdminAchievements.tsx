@@ -67,8 +67,9 @@ export default function AdminAchievements() {
       setIsEditing(false);
       setCurrentId(null);
       fetchAchievements();
-    } catch (error) {
-      toast.error('Failed to save achievement');
+    } catch (error: any) {
+      console.error('save achievement error:', error);
+      toast.error(`Saqlashda xato: ${error?.code ?? error?.message ?? 'noma\'lum'}`);
     }
   };
 
