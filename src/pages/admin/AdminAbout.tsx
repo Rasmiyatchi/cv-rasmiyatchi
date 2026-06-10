@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc, serverTimestamp, setDoc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../firebase';
+import { db } from '../../firebase';
 import { compressImage } from '../../utils/fileHelpers';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
@@ -61,20 +60,14 @@ export default function AdminAbout() {
     if (!file) return;
     setUploading(true);
     try {
-      const storageRef = ref(storage, 'profile/about.jpg');
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      setImageUrl(url);
-      toast.success('Rasm yuklandi. Saqlash tugmasini bosing.');
-    } catch {
-      // Agar Storage ruxsati yo'q bo'lsa — siqilgan base64 bilan saqlaymiz
-      try {
-        const base64 = await compressImage(file, 400, 400, 0.55);
-        setImageUrl(base64);
-        toast.success('Rasm siqilgan holda yuklandi. Saqlash tugmasini bosing.');
-      } catch {
-        toast.error('Rasmni yuklashda xatolik yuz berdi');
-      }
+      // Rasm siqilib base64 ko'rinishida tayyorlanadi (Firestore ichida saqlanadi).
+      // Tarmoqqa bog'liq emas — hech qachon "Yuklanmoqda" da osilib qolmaydi.
+      const base64 = await compressImage(file, 400, 400, 0.55);
+      setImageUrl(base64);
+      toast.success('Rasm tayyor. "Saqlash" tugmasini bosing.');
+    } catch (error: any) {
+      console.error('image upload error:', error);
+      toast.error('Rasmni yuklashda xatolik yuz berdi');
     } finally {
       setUploading(false);
     }
@@ -85,19 +78,12 @@ export default function AdminAbout() {
     if (!file) return;
     setUploadingHome(true);
     try {
-      const storageRef = ref(storage, 'profile/home.jpg');
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
-      setHomeImageUrl(url);
-      toast.success('Rasm yuklandi. Saqlash tugmasini bosing.');
-    } catch {
-      try {
-        const base64 = await compressImage(file, 600, 750, 0.6);
-        setHomeImageUrl(base64);
-        toast.success('Rasm siqilgan holda yuklandi. Saqlash tugmasini bosing.');
-      } catch {
-        toast.error('Rasmni yuklashda xatolik yuz berdi');
-      }
+      const base64 = await compressImage(file, 600, 750, 0.6);
+      setHomeImageUrl(base64);
+      toast.success('Rasm tayyor. "Saqlash" tugmasini bosing.');
+    } catch (error: any) {
+      console.error('home image upload error:', error);
+      toast.error('Rasmni yuklashda xatolik yuz berdi');
     } finally {
       setUploadingHome(false);
     }
